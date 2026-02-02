@@ -30,6 +30,8 @@ class Config:
     REDIS: Optional[Redis] = None
 
     KAFKA_BOOTSTRAP_IP: str = os.getenv("KAFKA_BOOTSTRAP_IP").strip()
+    KAFKA_TOPIC_COMMANDS: str = os.getenv("KAFKA_TOPIC_COMMANDS").strip()
+    KAFKA_TOPIC_RESPONSES: str = os.getenv("KAFKA_TOPIC_RESPONSES").strip()
 
     BASE_URL: str = os.getenv("BASE_URL").strip()
     AIOHTTP_SESSION: Optional[ClientSession] = None
@@ -42,9 +44,6 @@ class Config:
     DEBUG_TIMEZONE = timezone(os.getenv("DEBUG_TIMEZONE").strip())
 
     QUEUE_WORKER: Optional[Queue] = None
-
-    EVENT_WORKERS_COUNT: int = int(os.getenv("EVENT_WORKERS_COUNT").strip())
-    CMD_WORKERS_COUNT: int = int(os.getenv("CMD_WORKERS_COUNT").strip())
 
     REST_APP: Optional[FastAPI] = None
     UVICORN_HOST: str = os.getenv("UVICORN_HOST").strip()

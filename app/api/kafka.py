@@ -63,6 +63,9 @@ class KafkaInterface:
         elif rt == "delete_topic":
             return UserActions.delete_topic(DeleteTopicRequest(**payload))
 
+        elif rt == "media_file_info":
+            return UserActions.get_media_file_info(MediaFileInfoRequest(**payload))
+
         else:
             return None
 
@@ -71,12 +74,12 @@ class KafkaInterface:
         await Ut.log("Kafka listener has been started!")
 
         consumer = AIOKafkaConsumer(
-            "messages",
+            Config.KAFKA_TOPIC_COMMANDS,
             bootstrap_servers=Config.KAFKA_BOOTSTRAP_IP,
             group_id="demo-group",
             auto_offset_reset="earliest",
             enable_auto_commit=True,
-            value_deserializer=lambda v: v.decode("utf-8"),
+            value_deserializer=lambda v: json.loads(v.decode("utf-8")),
         )
         await consumer.start()
 
@@ -84,7 +87,7 @@ class KafkaInterface:
             async for msg in consumer:
                 print(f"{msg.topic}:{msg.partition}@{msg.offset} key={msg.key} value={msg.value}")
 
-                payload_coroutine = await cls.coroutine_from_payload(json.loads(msg.value))
+                payload_coroutine = await cls.coroutine_from_payload(msg.value)
                 if payload_coroutine:
                     await Config.QUEUE_WORKER.put(payload_coroutine)
 

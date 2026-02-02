@@ -173,3 +173,9 @@ class DeleteTopicRequest(BaseModel):
     request_id: str
     chat_id: int
     topic_id: int
+
+
+class MediaFileInfoRequest(BaseModel):
+    request_id: str
+    chat_id: int
+    message_id: int

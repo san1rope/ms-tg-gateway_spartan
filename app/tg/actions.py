@@ -8,6 +8,7 @@ from telethon.tl.types import PeerChannel, PeerChat, PeerUser
 from app.api.kafka import SendMessageRequest, EditMessageRequest, DeleteMessageRequest, MessagePinRequest, \
     MessageUnpinRequest, SendPhotoRequest, SendAudioRequest, SendVideoRequest, SendDocumentRequest, SendStickerRequest, \
     SendVoiceRequest, SendGIFRequest, CreateTopicRequest, EditTopicRequest, DeleteTopicRequest
+from app.api.kafka_models import MediaFileInfoRequest
 from app.config import Config
 
 
@@ -159,7 +160,12 @@ class UserActions:
     @staticmethod
     async def send_sticker(payload: SendStickerRequest):
         try:
-            pass
+            result = await Config.TG_CLIENT.send_file(
+                entity=await UserActions.get_peer_from_id(payload.chat_id),
+                file=payload.sticker,
+                reply_to=payload.topic_id
+            )
+            print(f"result send_sticker = {result}")
 
         except Exception:
             print(traceback.format_exc())
@@ -167,7 +173,14 @@ class UserActions:
     @staticmethod
     async def send_voice(payload: SendVoiceRequest):
         try:
-            pass
+            result = await Config.TG_CLIENT.send_file(
+                entity=await UserActions.get_peer_from_id(payload.chat_id),
+                file=payload.voice,
+                caption=payload.caption,
+                reply_to=payload.topic_id,
+                voice_note=True
+            )
+            print(f"result send_voice = {result}")
 
         except Exception:
             print(traceback.format_exc())
@@ -175,7 +188,15 @@ class UserActions:
     @staticmethod
     async def send_gif(payload: SendGIFRequest):
         try:
-            pass
+            result = await Config.TG_CLIENT.send_file(
+                entity=await UserActions.get_peer_from_id(payload.chat_id),
+                file=payload.gif,
+                caption=payload.caption,
+                parse_mode=payload.parse_mode,
+                reply_to=payload.topic_id,
+                video_note=False
+            )
+            print(f"result send_gif = {result}")
 
         except Exception:
             print(traceback.format_exc())
@@ -217,6 +238,14 @@ class UserActions:
                 top_msg_id=payload.topic_id
             ))
             print(f"result delete_topic = {result}")
+
+        except Exception:
+            print(traceback.format_exc())
+
+    @staticmethod
+    async def get_media_file_info(payload: MediaFileInfoRequest):
+        try:
+            pass
 
         except Exception:
             print(traceback.format_exc())
