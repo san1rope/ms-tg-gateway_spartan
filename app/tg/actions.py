@@ -3,11 +3,9 @@ from typing import Union
 
 from telethon.errors import MessageAuthorRequiredError, MessageNotModifiedError, BadRequestError
 from telethon.tl.functions.messages import CreateForumTopicRequest, EditForumTopicRequest, DeleteTopicHistoryRequest
-from telethon.tl.types import PeerChannel, PeerChat, PeerUser
+from telethon.tl import types as tt
 
-from app.api.kafka import SendMessageRequest, EditMessageRequest, DeleteMessageRequest, MessagePinRequest, \
-    MessageUnpinRequest, SendPhotoRequest, SendAudioRequest, SendVideoRequest, SendDocumentRequest, SendStickerRequest, \
-    SendVoiceRequest, SendGIFRequest, CreateTopicRequest, EditTopicRequest, DeleteTopicRequest
+from app.api.kafka import *
 from app.api.kafka_models import MediaFileInfoRequest
 from app.config import Config
 
@@ -18,13 +16,13 @@ class UserActions:
     async def get_peer_from_id(chat_id: Union[str, int]):
         chat_id = str(chat_id)
         if chat_id.startswith("-100"):
-            return PeerChannel(channel_id=int(chat_id[4:]))
+            return tt.PeerChannel(channel_id=int(chat_id[4:]))
 
         elif chat_id.startswith("-"):
-            return PeerChat(chat_id=int(chat_id[1:]))
+            return tt.PeerChat(chat_id=int(chat_id[1:]))
 
         else:
-            return PeerUser(user_id=int(chat_id))
+            return tt.PeerUser(user_id=int(chat_id))
 
     @staticmethod
     async def send_message(payload: SendMessageRequest):
@@ -245,7 +243,34 @@ class UserActions:
     @staticmethod
     async def get_media_file_info(payload: MediaFileInfoRequest):
         try:
-            pass
+            entity = await Config.TG_CLIENT.get_entity(payload.chat_id)
+            msg = await Config.TG_CLIENT.get_messages(entity, ids=payload.message_id)
+            if not msg or not msg.media:
+                Config.LOGGER.error(f"Не нашел медиа по chat_id={payload.chat_id}; msg_id={payload.message_id}!")
+                return
+
+            if isinstance(msg.media, tt.MessageMediaPhoto):
+                largest_size = msg.media.photo.sizes[-1]
+                info_obj = MediaFileInfo(
+                    file_type="photo",
+                    file_name=None,
+                    mime_type="image/jpeg",
+                    file_size=getattr(largest_size, "size", 0),
+                    width=largest_size.w if hasattr(largest_size, "w") else None,
+                    height=largest_size.h if hasattr(largest_size, "h") else None,
+                    created_at=msg.date.isoformat()
+                )
+
+            elif isinstance(msg.media, tt.MessageMediaDocument):
+                info_obj = MediaFileInfo(
+                    file_type="document",
+                    file_name=None,
+                    mime_type=msg.media.document.mime_type,
+                    file_size=msg.media.document.size,
+                    width=largest_size.w if hasattr(largest_size, "w") else None,
+                    height=largest_size.h if hasattr(largest_size, "h") else None,
+                    created_at=msg.date.isoformat()
+                )
 
         except Exception:
             print(traceback.format_exc())

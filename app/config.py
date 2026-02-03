@@ -26,7 +26,6 @@ class Config:
     LOGGER: Optional[Logger] = None
 
     REDIS_IP: str = os.getenv("REDIS_IP").strip()
-    CACHE_LIVE: int = int(os.getenv("CACHE_LIVE").strip())
     REDIS: Optional[Redis] = None
 
     KAFKA_BOOTSTRAP_IP: str = os.getenv("KAFKA_BOOTSTRAP_IP").strip()

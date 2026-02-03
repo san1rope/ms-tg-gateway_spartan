@@ -1,0 +1,26 @@
+mtprotosender.py:234 #INFO     [2026-02-02 23:30:10,692] - telethon.network.mtprotosender - 0| Connecting to 149.154.171.5:443/TcpFull...
+mtprotosender.py:285 #INFO     [2026-02-02 23:30:10,883] - telethon.network.mtprotosender - 0| Connection to 149.154.171.5:443/TcpFull complete!
+utils.py:63 #INFO     [2026-02-02 23:30:12,102] - root - 0| Client has been connected!
+utils.py:63 #INFO     [2026-02-02 23:30:12,102] - root - 0| Redis has been initialized!
+utils.py:63 #INFO     [2026-02-02 23:30:12,102] - root - 0| Prepare to load data in redis...
+utils.py:63 #INFO     [2026-02-02 23:30:12,103] - root - 0| Loading messages data from small groups...
+utils.py:63 #INFO     [2026-02-02 23:30:15,141] - root - 0| Data from small groups has been loaded!
+utils.py:63 #INFO     [2026-02-02 23:30:15,141] - root - 0| Event handlers has been registered!
+utils.py:63 #INFO     [2026-02-02 23:30:15,141] - root - 0| Queue worker has been started!
+utils.py:63 #INFO     [2026-02-02 23:30:15,141] - root - 0| Kafka listener has been started!
+subscription_state.py:110 #INFO     [2026-02-02 23:30:15,141] - aiokafka.consumer.subscription_state - 0| Updating subscribed topics to: frozenset({'tg-commands'})
+client.py:240 #ERROR    [2026-02-02 23:30:17,148] - aiokafka - 0| Unable connect to "127.0.0.1:9092": [WinError 1225] The remote computer refused the network connection
+base_events.py:1758 #ERROR    [2026-02-02 23:30:17,148] - asyncio - 0| Task exception was never retrieved
+future: <Task finished name='Task-13' coro=<KafkaInterface.start_polling() done, defined at C:\Users\valet\PycharmProjects\tgbot-microservice\app\api\kafka.py:72> exception=KafkaConnectionError("Unable to bootstrap from [('127.0.0.1', 9092, <AddressFamily.AF_INET: 2>)]")>
+Traceback (most recent call last):
+  File "C:\Users\valet\PycharmProjects\tgbot-microservice\app\api\kafka.py", line 84, in start_polling
+    await consumer.start()
+  File "C:\Users\valet\PycharmProjects\tgbot-microservice\.venv\lib\site-packages\aiokafka\consumer\consumer.py", line 371, in start
+    await self._client.bootstrap()
+  File "C:\Users\valet\PycharmProjects\tgbot-microservice\.venv\lib\site-packages\aiokafka\client.py", line 266, in bootstrap
+    raise KafkaConnectionError(f"Unable to bootstrap from {self.hosts}")
+aiokafka.errors.KafkaConnectionError: KafkaConnectionError: Unable to bootstrap from [('127.0.0.1', 9092, <AddressFamily.AF_INET: 2>)]
+base_events.py:1758 #ERROR    [2026-02-02 23:30:17,176] - asyncio - 0| Unclosed AIOKafkaConsumer
+consumer: <aiokafka.consumer.consumer.AIOKafkaConsumer object at 0x0000022FB6057E80>
+mtprotosender.py:325 #INFO     [2026-02-02 23:30:22,592] - telethon.network.mtprotosender - 0| Disconnecting from 149.154.171.5:443/TcpFull...
+mtprotosender.py:345 #INFO     [2026-02-02 23:30:22,592] - telethon.network.mtprotosender - 0| Disconnection from 149.154.171.5:443/TcpFull complete!

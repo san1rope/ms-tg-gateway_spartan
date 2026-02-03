@@ -49,13 +49,13 @@ class GIFData(BaseModel):
     file_size: int
 
 
-class MediaInfo(BaseModel):
+class MediaFileInfo(BaseModel):
     file_type: str
-    file_name: str
+    file_name: Optional[str]
     mime_type: str
     file_size: int
-    width: int
-    height: int
+    width: Optional[int]
+    height: Optional[int]
     created_at: str
 
 
