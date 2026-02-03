@@ -13,6 +13,8 @@ from app.config import Config, LOG_LIST
 
 
 class Utils:
+    STATUS_SUCCESS = "success"
+    STATUS_FAIL = "fail"
 
     MSG_INDEX_KEY = "msg:index"
     MSG_K = lambda mid: f"msg:{mid}"

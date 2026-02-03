@@ -1,6 +1,8 @@
 import json
+import os
 
-from aiokafka import AIOKafkaConsumer
+from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
+from aiokafka.errors import KafkaConnectionError
 
 from app.config import Config
 from app.api.kafka_models import *
@@ -9,6 +11,50 @@ from app.utils import Utils as Ut
 
 
 class KafkaInterface:
+    BOOTSTRAP = os.getenv("KAFKA_BOOTSTRAP", Config.KAFKA_BOOTSTRAP_IP)
+    PRODUCER: Optional[AIOKafkaProducer] = None
+    CONSUMER: Optional[AIOKafkaConsumer] = None
+
+    @classmethod
+    async def init_producer(cls) -> bool:
+        if cls.PRODUCER is None:
+            cls.PRODUCER = AIOKafkaProducer(
+                bootstrap_servers=cls.BOOTSTRAP,
+                enable_idempotence=True,
+                acks="all",
+                max_batch_size=16384,
+                value_serializer=lambda v: json.loads(v.decode("utf-8")),
+                key_serializer=lambda k: k.encode("utf-8")
+            )
+
+            try:
+                await cls.PRODUCER.start()
+                Config.LOGGER.info("Kafka Producer has been init")
+                return True
+
+            except KafkaConnectionError as ex:
+                Config.LOGGER.critical(f"Kafka Connection Error! ex: {ex}")
+                return False
+
+    @classmethod
+    async def init_consumer(cls) -> bool:
+        if cls.CONSUMER is None:
+            cls.CONSUMER = AIOKafkaConsumer(
+                Config.KAFKA_TOPIC_COMMANDS,
+                bootstrap_servers=Config.KAFKA_BOOTSTRAP_IP,
+                group_id="demo-group",
+                auto_offset_reset="earliest",
+                enable_auto_commit=True,
+                value_deserializer=lambda v: json.loads(v.decode("utf-8")),
+            )
+            try:
+                await cls.CONSUMER.start()
+                Config.LOGGER.info("Kafka Consumer has been init")
+                return True
+
+            except KafkaConnectionError as ex:
+                Config.LOGGER.critical(f"Kafka Connection Error! ex: {ex}")
+                return False
 
     @staticmethod
     async def coroutine_from_payload(payload):
@@ -16,7 +62,6 @@ class KafkaInterface:
         if not rt:
             return None
 
-        print(f"rt = {rt}")
         payload.pop("request_type")
         if rt == "send_message":
             return UserActions.send_message(SendMessageRequest(**payload))
@@ -70,21 +115,17 @@ class KafkaInterface:
             return None
 
     @classmethod
-    async def start_polling(cls):
+    async def start_polling(cls) -> Optional[bool]:
         await Ut.log("Kafka listener has been started!")
 
-        consumer = AIOKafkaConsumer(
-            Config.KAFKA_TOPIC_COMMANDS,
-            bootstrap_servers=Config.KAFKA_BOOTSTRAP_IP,
-            group_id="demo-group",
-            auto_offset_reset="earliest",
-            enable_auto_commit=True,
-            value_deserializer=lambda v: json.loads(v.decode("utf-8")),
-        )
-        await consumer.start()
+        if not cls.CONSUMER:
+            result = await cls.init_consumer()
+            if not result:
+                Config.LOGGER.critical("Kafka Consumer is not initialized.")
+                return False
 
         try:
-            async for msg in consumer:
+            async for msg in cls.CONSUMER:
                 print(f"{msg.topic}:{msg.partition}@{msg.offset} key={msg.key} value={msg.value}")
 
                 payload_coroutine = await cls.coroutine_from_payload(msg.value)
@@ -92,4 +133,26 @@ class KafkaInterface:
                     await Config.QUEUE_WORKER.put(payload_coroutine)
 
         finally:
-            await consumer.stop()
+            await cls.CONSUMER.stop()
+
+    @classmethod
+    async def send_msg(cls, payload: BaseModel, topic: str):
+        if cls.PRODUCER is None:
+            raise RuntimeError("Kafka Producer is not initialized.")
+
+        data = payload.model_dump()
+        data["request_id"] = payload.request_id
+        data["request_type"] = "media_file_info"
+
+        try:
+            metadata = await cls.PRODUCER.send_and_wait(topic=topic, key=data["request_id"], value=data)
+            return {
+                "message_id": data["request_id"],
+                "topic": metadata.topic,
+                "partition": metadata.partition,
+                "offset": metadata.offset,
+            }
+
+        except Exception as ex:
+            return {"error": str(ex)}
+

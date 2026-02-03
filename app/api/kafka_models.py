@@ -51,12 +51,17 @@ class GIFData(BaseModel):
 
 class MediaFileInfo(BaseModel):
     file_type: str
-    file_name: Optional[str]
+    file_name: Optional[str] = None
     mime_type: str
     file_size: int
-    width: Optional[int]
-    height: Optional[int]
+    width: Optional[int] = None
+    height: Optional[int] = None
     created_at: str
+
+
+class MediaFileInfoResponse(BaseModel):
+    status: str
+    media_info: Optional[MediaFileInfo] = None
 
 
 class SendMessageRequest(BaseModel):

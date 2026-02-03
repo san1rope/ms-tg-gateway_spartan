@@ -1,0 +1,19 @@
+mtprotosender.py:234 #INFO     [2026-02-03 17:12:35,472] - telethon.network.mtprotosender - 0| Connecting to 149.154.171.5:443/TcpFull...
+mtprotosender.py:285 #INFO     [2026-02-03 17:12:35,646] - telethon.network.mtprotosender - 0| Connection to 149.154.171.5:443/TcpFull complete!
+utils.py:65 #INFO     [2026-02-03 17:12:36,769] - root - 0| Client has been connected!
+utils.py:65 #INFO     [2026-02-03 17:12:36,770] - root - 0| Redis has been initialized!
+utils.py:65 #INFO     [2026-02-03 17:12:36,770] - root - 0| Prepare to load data in redis...
+utils.py:65 #INFO     [2026-02-03 17:12:36,770] - root - 0| Loading messages data from small groups...
+utils.py:65 #INFO     [2026-02-03 17:12:39,797] - root - 0| Data from small groups has been loaded!
+subscription_state.py:110 #INFO     [2026-02-03 17:12:39,798] - aiokafka.consumer.subscription_state - 0| Updating subscribed topics to: frozenset({'tg-commands'})
+utils.py:65 #INFO     [2026-02-03 17:12:39,800] - root - 0| Queue worker has been started!
+group_coordinator.py:594 #INFO     [2026-02-03 17:12:39,830] - aiokafka.consumer.group_coordinator - 0| Discovered coordinator 1 for group demo-group
+group_coordinator.py:415 #INFO     [2026-02-03 17:12:39,830] - aiokafka.consumer.group_coordinator - 0| Revoking previously assigned partitions set() for group demo-group
+group_coordinator.py:1281 #INFO     [2026-02-03 17:12:39,830] - aiokafka.consumer.group_coordinator - 0| (Re-)joining group demo-group
+group_coordinator.py:1360 #INFO     [2026-02-03 17:12:39,899] - aiokafka.consumer.group_coordinator - 0| Joined group 'demo-group' (generation 56) with member_id aiokafka-0.12.0-9fcc2e43-43c7-4d20-a08f-d330d88a7cbb
+group_coordinator.py:1519 #INFO     [2026-02-03 17:12:39,985] - aiokafka.consumer.group_coordinator - 0| Successfully synced group demo-group with generation 56
+group_coordinator.py:506 #INFO     [2026-02-03 17:12:39,985] - aiokafka.consumer.group_coordinator - 0| Setting newly assigned partitions {TopicPartition(topic='tg-commands', partition=0)} for group demo-group
+utils.py:65 #INFO     [2026-02-03 17:12:40,013] - root - 0| Event handlers has been registered!
+utils.py:65 #INFO     [2026-02-03 17:12:40,013] - root - 0| Kafka listener has been started!
+mtprotosender.py:325 #INFO     [2026-02-03 17:13:04,669] - telethon.network.mtprotosender - 0| Disconnecting from 149.154.171.5:443/TcpFull...
+mtprotosender.py:345 #INFO     [2026-02-03 17:13:04,670] - telethon.network.mtprotosender - 0| Disconnection from 149.154.171.5:443/TcpFull complete!

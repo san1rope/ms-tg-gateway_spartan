@@ -8,11 +8,7 @@ from app.config import Config
 
 
 @Config.REST_APP.get("/internal/stream/{chat_id}/{msg_id}")
-async def stream_video_from_tg(
-        chat_id: int,
-        msg_id: int,
-        offset: int = Query(0)
-):
+async def stream_video_from_tg(chat_id: int, msg_id: int, offset: int = Query(0)):
     async def generate_chunks():
         start_time = time.time()
         chunk_count = 0

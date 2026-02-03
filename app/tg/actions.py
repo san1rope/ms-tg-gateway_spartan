@@ -8,6 +8,7 @@ from telethon.tl import types as tt
 from app.api.kafka import *
 from app.api.kafka_models import MediaFileInfoRequest
 from app.config import Config
+from app.utils import Utils as Ut
 
 
 class UserActions:
@@ -251,26 +252,56 @@ class UserActions:
 
             if isinstance(msg.media, tt.MessageMediaPhoto):
                 largest_size = msg.media.photo.sizes[-1]
-                info_obj = MediaFileInfo(
-                    file_type="photo",
-                    file_name=None,
-                    mime_type="image/jpeg",
-                    file_size=getattr(largest_size, "size", 0),
-                    width=largest_size.w if hasattr(largest_size, "w") else None,
-                    height=largest_size.h if hasattr(largest_size, "h") else None,
-                    created_at=msg.date.isoformat()
+                info_obj = MediaFileInfoResponse(
+                    status=Ut.STATUS_SUCCESS,
+                    media_info=MediaFileInfo(
+                        file_type="photo",
+                        file_name=None,
+                        mime_type="image/jpeg",
+                        file_size=getattr(largest_size, "size", 0),
+                        width=largest_size.w if hasattr(largest_size, "w") else None,
+                        height=largest_size.h if hasattr(largest_size, "h") else None,
+                        created_at=msg.date.isoformat()
+                    )
                 )
 
             elif isinstance(msg.media, tt.MessageMediaDocument):
-                info_obj = MediaFileInfo(
-                    file_type="document",
-                    file_name=None,
-                    mime_type=msg.media.document.mime_type,
-                    file_size=msg.media.document.size,
-                    width=largest_size.w if hasattr(largest_size, "w") else None,
-                    height=largest_size.h if hasattr(largest_size, "h") else None,
-                    created_at=msg.date.isoformat()
+                result = {
+                    "file_type": "document"
+                }
+                for attr in msg.media.document.attributes:
+                    if isinstance(attr, tt.DocumentAttributeFilename):
+                        result["file_name"] = attr.file_name
+
+                    elif isinstance(attr, tt.DocumentAttributeVideo):
+                        result["file_type"] = "video"
+                        result["width"] = attr.w
+                        result["height"] = attr.h
+
+                    elif isinstance(attr, tt.DocumentAttributeAudio):
+                        result["file_type"] = "voice" if attr.voice else "audio"
+
+                    elif isinstance(attr, tt.DocumentAttributeSticker):
+                        result["file_type"] = "sticker"
+
+                    elif isinstance(attr, tt.DocumentAttributeImageSize):
+                        result["width"] = attr.w
+                        result["height"] = attr.h
+
+                info_obj = MediaFileInfoResponse(
+                    status=Ut.STATUS_SUCCESS,
+                    media_info=MediaFileInfo(
+                        mime_type=msg.media.document.mime_type,
+                        file_size=msg.media.document.size,
+                        created_at=msg.date.isoformat(),
+                        **result
+                    )
                 )
+
+            else:
+                info_obj = MediaFileInfoResponse(status=Ut.STATUS_FAIL, media_info=None)
+
+            await KafkaInterface().send_msg(payload=info_obj, topic=Config.KAFKA_TOPIC_RESPONSES)
 
         except Exception:
             print(traceback.format_exc())

@@ -56,6 +56,10 @@ async def lifespan(app: FastAPI):
     await Ut.load_data_in_redis()
 
     asyncio.create_task(worker())
+
+    if (not await KafkaInterface().init_consumer()) or (not await KafkaInterface().init_producer()):
+        return
+
     asyncio.create_task(KafkaInterface().start_polling())
 
     Config.TG_CLIENT.add_event_handler(EventsCatcher.event_new_message, events.NewMessage())
