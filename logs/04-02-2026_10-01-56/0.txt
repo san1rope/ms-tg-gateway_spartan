@@ -1,0 +1,24 @@
+mtprotosender.py:234 #INFO     [2026-02-04 10:01:56,450] - telethon.network.mtprotosender - 0| Connecting to 149.154.171.5:443/TcpFull...
+mtprotosender.py:285 #INFO     [2026-02-04 10:01:56,629] - telethon.network.mtprotosender - 0| Connection to 149.154.171.5:443/TcpFull complete!
+utils.py:65 #INFO     [2026-02-04 10:01:58,244] - root - 0| Client has been connected!
+utils.py:65 #INFO     [2026-02-04 10:01:58,245] - root - 0| Redis has been initialized!
+utils.py:65 #INFO     [2026-02-04 10:01:58,245] - root - 0| Prepare to load data in redis...
+utils.py:65 #INFO     [2026-02-04 10:01:58,245] - root - 0| Loading messages data from small groups...
+utils.py:65 #INFO     [2026-02-04 10:02:00,728] - root - 0| Data from small groups has been loaded!
+subscription_state.py:110 #INFO     [2026-02-04 10:02:00,729] - aiokafka.consumer.subscription_state - 0| Updating subscribed topics to: frozenset({'tg-commands'})
+utils.py:65 #INFO     [2026-02-04 10:02:00,730] - root - 0| Queue worker has been started!
+group_coordinator.py:594 #INFO     [2026-02-04 10:02:00,786] - aiokafka.consumer.group_coordinator - 0| Discovered coordinator 1 for group demo-group
+group_coordinator.py:415 #INFO     [2026-02-04 10:02:00,787] - aiokafka.consumer.group_coordinator - 0| Revoking previously assigned partitions set() for group demo-group
+group_coordinator.py:1281 #INFO     [2026-02-04 10:02:00,787] - aiokafka.consumer.group_coordinator - 0| (Re-)joining group demo-group
+group_coordinator.py:1360 #INFO     [2026-02-04 10:02:02,471] - aiokafka.consumer.group_coordinator - 0| Joined group 'demo-group' (generation 79) with member_id aiokafka-0.12.0-67ff8a33-8338-4839-bfcf-573dfc51a8a4
+group_coordinator.py:1519 #INFO     [2026-02-04 10:02:02,672] - aiokafka.consumer.group_coordinator - 0| Successfully synced group demo-group with generation 79
+group_coordinator.py:506 #INFO     [2026-02-04 10:02:02,673] - aiokafka.consumer.group_coordinator - 0| Setting newly assigned partitions {TopicPartition(topic='tg-commands', partition=0)} for group demo-group
+kafka.py:52 #INFO     [2026-02-04 10:02:02,673] - root - 0| Kafka Consumer has been init
+kafka.py:32 #INFO     [2026-02-04 10:02:02,728] - root - 0| Kafka Producer has been init
+utils.py:65 #INFO     [2026-02-04 10:02:02,728] - root - 0| Event handlers has been registered!
+utils.py:65 #INFO     [2026-02-04 10:02:02,730] - root - 0| Kafka listener has been started!
+mtprotosender.py:325 #INFO     [2026-02-04 10:03:37,727] - telethon.network.mtprotosender - 0| Disconnecting from 149.154.171.5:443/TcpFull...
+mtprotosender.py:345 #INFO     [2026-02-04 10:03:37,728] - telethon.network.mtprotosender - 0| Disconnection from 149.154.171.5:443/TcpFull complete!
+group_coordinator.py:314 #ERROR    [2026-02-04 10:04:17,736] - aiokafka.consumer.group_coordinator - 0| Error sending LeaveGroupRequest_v1 to node 1 [[Error 7] RequestTimedOutError] -- marking coordinator dead
+group_coordinator.py:531 #WARNING  [2026-02-04 10:04:17,736] - aiokafka.consumer.group_coordinator - 0| Marking the coordinator dead (node 1)for group demo-group.
+group_coordinator.py:388 #ERROR    [2026-02-04 10:04:17,737] - aiokafka.consumer.group_coordinator - 0| LeaveGroup request failed: [Error 7] RequestTimedOutError

@@ -61,6 +61,7 @@ class MediaFileInfo(BaseModel):
 
 class MediaFileInfoResponse(BaseModel):
     status: str
+    request_id: str
     media_info: Optional[MediaFileInfo] = None
 
 

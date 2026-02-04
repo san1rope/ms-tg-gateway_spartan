@@ -1,12 +1,13 @@
 import asyncio
+import sys
 from contextlib import asynccontextmanager
 from datetime import datetime
 
 import uvicorn
 from aiohttp import ClientSession
 from fastapi import FastAPI
-from redis.asyncio import Redis
 from telethon import events, TelegramClient
+from telethon.errors import SessionPasswordNeededError
 
 from app.api.kafka import KafkaInterface
 from app.config import Config
@@ -26,7 +27,7 @@ async def worker():
                 break
 
             except Exception as ex:
-                print(ex)
+                Config.LOGGER.error(f"Queue worker | ex: {ex}")
 
 
 @asynccontextmanager
@@ -38,19 +39,18 @@ async def lifespan(app: FastAPI):
     Config.LOGGER = logger
     Config.AIOHTTP_SESSION = ClientSession()
     Config.QUEUE_WORKER = asyncio.Queue()
+    Config.KAFKA_INTERFACE_OBJ = KafkaInterface()
 
     loop = asyncio.get_event_loop()
     loop.create_task(Ut.logging_queue())
 
-    Config.TG_CLIENT = TelegramClient(session="work-app", api_id=Config.TG_API_ID, api_hash=Config.TG_API_HASH)
-    await Config.TG_CLIENT.start(phone=Config.PHONE_NUMBER)
+    if not await Ut.init_telegram_client():
+        sys.exit(1)
 
     await Ut.log("Client has been connected!")
 
-    Config.REDIS = await Redis(
-        host=Config.REDIS_IP, port=6379, db=0, decode_responses=False, socket_keepalive=True,
-        password="784512", health_check_interval=15, socket_connect_timeout=5
-    )
+    if not await Ut.init_redis():
+        sys.exit(1)
 
     await Ut.log("Redis has been initialized!")
     await Ut.load_data_in_redis()

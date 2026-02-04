@@ -1,6 +1,10 @@
-aiohttp~=3.12.15
-Telethon~=1.42.0
-python-dotenv~=1.1.1
-pydantic~=2.11.9
-pytz~=2025.2
-aiokafka~=0.12.0
+uvicorn==0.40.0
+aiohttp==3.12.15
+fastapi==0.128.0
+redis==7.1.0
+Telethon==1.42.0
+TgCrypto==1.2.5
+python-dotenv==1.1.1
+pytz==2025.2
+pydantic==2.11.10
+aiokafka==0.12.0

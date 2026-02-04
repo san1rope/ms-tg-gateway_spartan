@@ -1,0 +1,44 @@
+mtprotosender.py:234 #INFO     [2026-02-04 10:16:01,645] - telethon.network.mtprotosender - 0| Connecting to 149.154.171.5:443/TcpFull...
+mtprotosender.py:285 #INFO     [2026-02-04 10:16:01,882] - telethon.network.mtprotosender - 0| Connection to 149.154.171.5:443/TcpFull complete!
+utils.py:65 #INFO     [2026-02-04 10:16:03,108] - root - 0| Client has been connected!
+utils.py:65 #INFO     [2026-02-04 10:16:03,109] - root - 0| Redis has been initialized!
+utils.py:65 #INFO     [2026-02-04 10:16:03,109] - root - 0| Prepare to load data in redis...
+utils.py:65 #INFO     [2026-02-04 10:16:03,109] - root - 0| Loading messages data from small groups...
+utils.py:65 #INFO     [2026-02-04 10:16:05,993] - root - 0| Data from small groups has been loaded!
+subscription_state.py:110 #INFO     [2026-02-04 10:16:06,002] - aiokafka.consumer.subscription_state - 0| Updating subscribed topics to: frozenset({'tg-commands'})
+utils.py:65 #INFO     [2026-02-04 10:16:06,002] - root - 0| Queue worker has been started!
+group_coordinator.py:594 #INFO     [2026-02-04 10:16:06,042] - aiokafka.consumer.group_coordinator - 0| Discovered coordinator 1 for group demo-group
+group_coordinator.py:415 #INFO     [2026-02-04 10:16:06,042] - aiokafka.consumer.group_coordinator - 0| Revoking previously assigned partitions set() for group demo-group
+group_coordinator.py:1281 #INFO     [2026-02-04 10:16:06,042] - aiokafka.consumer.group_coordinator - 0| (Re-)joining group demo-group
+group_coordinator.py:1360 #INFO     [2026-02-04 10:16:10,788] - aiokafka.consumer.group_coordinator - 0| Joined group 'demo-group' (generation 86) with member_id aiokafka-0.12.0-639b46da-099c-49cc-87a0-a161eec22040
+group_coordinator.py:1519 #INFO     [2026-02-04 10:16:10,812] - aiokafka.consumer.group_coordinator - 0| Successfully synced group demo-group with generation 86
+group_coordinator.py:506 #INFO     [2026-02-04 10:16:10,813] - aiokafka.consumer.group_coordinator - 0| Setting newly assigned partitions {TopicPartition(topic='tg-commands', partition=0)} for group demo-group
+kafka.py:52 #INFO     [2026-02-04 10:16:10,814] - root - 0| Kafka Consumer has been init
+kafka.py:32 #INFO     [2026-02-04 10:16:10,857] - root - 0| Kafka Producer has been init
+utils.py:65 #INFO     [2026-02-04 10:16:10,857] - root - 0| Event handlers has been registered!
+utils.py:65 #INFO     [2026-02-04 10:16:10,858] - root - 0| Kafka listener has been started!
+group_coordinator.py:842 #WARNING  [2026-02-04 10:19:32,308] - aiokafka.consumer.group_coordinator - 0| Heartbeat failed for group demo-group because it is rebalancing
+group_coordinator.py:415 #INFO     [2026-02-04 10:19:32,317] - aiokafka.consumer.group_coordinator - 0| Revoking previously assigned partitions frozenset({TopicPartition(topic='tg-commands', partition=0)}) for group demo-group
+group_coordinator.py:1281 #INFO     [2026-02-04 10:19:32,317] - aiokafka.consumer.group_coordinator - 0| (Re-)joining group demo-group
+group_coordinator.py:1360 #INFO     [2026-02-04 10:19:32,320] - aiokafka.consumer.group_coordinator - 0| Joined group 'demo-group' (generation 87) with member_id aiokafka-0.12.0-639b46da-099c-49cc-87a0-a161eec22040
+group_coordinator.py:1368 #INFO     [2026-02-04 10:19:32,322] - aiokafka.consumer.group_coordinator - 0| Elected group leader -- performing partition assignments using roundrobin
+group_coordinator.py:70 #INFO     [2026-02-04 10:19:32,715] - aiokafka.consumer.group_coordinator - 0| Metadata for topic has changed from {} to {'tg-responses': 1, 'tg-commands': 1}. 
+group_coordinator.py:1519 #INFO     [2026-02-04 10:19:32,725] - aiokafka.consumer.group_coordinator - 0| Successfully synced group demo-group with generation 87
+group_coordinator.py:506 #INFO     [2026-02-04 10:19:32,726] - aiokafka.consumer.group_coordinator - 0| Setting newly assigned partitions {TopicPartition(topic='tg-commands', partition=0)} for group demo-group
+group_coordinator.py:842 #WARNING  [2026-02-04 10:24:33,245] - aiokafka.consumer.group_coordinator - 0| Heartbeat failed for group demo-group because it is rebalancing
+group_coordinator.py:415 #INFO     [2026-02-04 10:24:33,255] - aiokafka.consumer.group_coordinator - 0| Revoking previously assigned partitions frozenset({TopicPartition(topic='tg-commands', partition=0)}) for group demo-group
+group_coordinator.py:1281 #INFO     [2026-02-04 10:24:33,256] - aiokafka.consumer.group_coordinator - 0| (Re-)joining group demo-group
+group_coordinator.py:1360 #INFO     [2026-02-04 10:24:33,260] - aiokafka.consumer.group_coordinator - 0| Joined group 'demo-group' (generation 88) with member_id aiokafka-0.12.0-639b46da-099c-49cc-87a0-a161eec22040
+group_coordinator.py:1368 #INFO     [2026-02-04 10:24:33,260] - aiokafka.consumer.group_coordinator - 0| Elected group leader -- performing partition assignments using roundrobin
+group_coordinator.py:1519 #INFO     [2026-02-04 10:24:33,272] - aiokafka.consumer.group_coordinator - 0| Successfully synced group demo-group with generation 88
+group_coordinator.py:506 #INFO     [2026-02-04 10:24:33,273] - aiokafka.consumer.group_coordinator - 0| Setting newly assigned partitions {TopicPartition(topic='tg-commands', partition=0)} for group demo-group
+group_coordinator.py:842 #WARNING  [2026-02-04 10:24:36,289] - aiokafka.consumer.group_coordinator - 0| Heartbeat failed for group demo-group because it is rebalancing
+group_coordinator.py:415 #INFO     [2026-02-04 10:24:36,301] - aiokafka.consumer.group_coordinator - 0| Revoking previously assigned partitions frozenset({TopicPartition(topic='tg-commands', partition=0)}) for group demo-group
+group_coordinator.py:1281 #INFO     [2026-02-04 10:24:36,302] - aiokafka.consumer.group_coordinator - 0| (Re-)joining group demo-group
+group_coordinator.py:1360 #INFO     [2026-02-04 10:24:36,307] - aiokafka.consumer.group_coordinator - 0| Joined group 'demo-group' (generation 89) with member_id aiokafka-0.12.0-639b46da-099c-49cc-87a0-a161eec22040
+group_coordinator.py:1368 #INFO     [2026-02-04 10:24:36,307] - aiokafka.consumer.group_coordinator - 0| Elected group leader -- performing partition assignments using roundrobin
+group_coordinator.py:70 #INFO     [2026-02-04 10:24:36,612] - aiokafka.consumer.group_coordinator - 0| Metadata for topic has changed from {'tg-commands': 1} to {'tg-responses': 1, 'tg-commands': 1}. 
+group_coordinator.py:1519 #INFO     [2026-02-04 10:24:36,624] - aiokafka.consumer.group_coordinator - 0| Successfully synced group demo-group with generation 89
+group_coordinator.py:506 #INFO     [2026-02-04 10:24:36,626] - aiokafka.consumer.group_coordinator - 0| Setting newly assigned partitions {TopicPartition(topic='tg-commands', partition=0)} for group demo-group
+mtprotosender.py:325 #INFO     [2026-02-04 10:24:44,194] - telethon.network.mtprotosender - 0| Disconnecting from 149.154.171.5:443/TcpFull...
+mtprotosender.py:345 #INFO     [2026-02-04 10:24:44,195] - telethon.network.mtprotosender - 0| Disconnection from 149.154.171.5:443/TcpFull complete!

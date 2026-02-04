@@ -1,4 +1,3 @@
-import traceback
 from typing import Union
 
 from telethon.errors import MessageAuthorRequiredError, MessageNotModifiedError, BadRequestError
@@ -254,6 +253,7 @@ class UserActions:
                 largest_size = msg.media.photo.sizes[-1]
                 info_obj = MediaFileInfoResponse(
                     status=Ut.STATUS_SUCCESS,
+                    request_id=payload.request_id,
                     media_info=MediaFileInfo(
                         file_type="photo",
                         file_name=None,
@@ -290,6 +290,7 @@ class UserActions:
 
                 info_obj = MediaFileInfoResponse(
                     status=Ut.STATUS_SUCCESS,
+                    request_id=payload.request_id,
                     media_info=MediaFileInfo(
                         mime_type=msg.media.document.mime_type,
                         file_size=msg.media.document.size,
@@ -299,9 +300,11 @@ class UserActions:
                 )
 
             else:
-                info_obj = MediaFileInfoResponse(status=Ut.STATUS_FAIL, media_info=None)
+                info_obj = MediaFileInfoResponse(status=Ut.STATUS_FAIL, request_id=payload.request_id, media_info=None)
 
-            await KafkaInterface().send_msg(payload=info_obj, topic=Config.KAFKA_TOPIC_RESPONSES)
+            print(f"result info_obj = {info_obj}")
+            result = await Config.KAFKA_INTERFACE_OBJ.send_msg(payload=info_obj, topic="tg-responses")
+            print(f"response kafka msg = {result}")
 
         except Exception:
             print(traceback.format_exc())

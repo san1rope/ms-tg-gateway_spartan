@@ -26,8 +26,10 @@ class Config:
     LOGGER: Optional[Logger] = None
 
     REDIS_IP: str = os.getenv("REDIS_IP").strip()
+    REDIS_PASSWORD: str = os.getenv("REDIS_PASSWORD").strip()
     REDIS: Optional[Redis] = None
 
+    KAFKA_INTERFACE_OBJ = None
     KAFKA_BOOTSTRAP_IP: str = os.getenv("KAFKA_BOOTSTRAP_IP").strip()
     KAFKA_TOPIC_COMMANDS: str = os.getenv("KAFKA_TOPIC_COMMANDS").strip()
     KAFKA_TOPIC_RESPONSES: str = os.getenv("KAFKA_TOPIC_RESPONSES").strip()

@@ -1,5 +1,6 @@
 import json
 import os
+import traceback
 
 from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
 from aiokafka.errors import KafkaConnectionError
@@ -23,7 +24,7 @@ class KafkaInterface:
                 enable_idempotence=True,
                 acks="all",
                 max_batch_size=16384,
-                value_serializer=lambda v: json.loads(v.decode("utf-8")),
+                value_serializer=lambda v: json.dumps(v).encode("utf-8"),
                 key_serializer=lambda k: k.encode("utf-8")
             )
 
@@ -130,6 +131,7 @@ class KafkaInterface:
 
                 payload_coroutine = await cls.coroutine_from_payload(msg.value)
                 if payload_coroutine:
+                    print("new payload_coroutine")
                     await Config.QUEUE_WORKER.put(payload_coroutine)
 
         finally:
@@ -138,7 +140,7 @@ class KafkaInterface:
     @classmethod
     async def send_msg(cls, payload: BaseModel, topic: str):
         if cls.PRODUCER is None:
-            raise RuntimeError("Kafka Producer is not initialized.")
+            await cls.init_producer()
 
         data = payload.model_dump()
         data["request_id"] = payload.request_id
@@ -146,6 +148,7 @@ class KafkaInterface:
 
         try:
             metadata = await cls.PRODUCER.send_and_wait(topic=topic, key=data["request_id"], value=data)
+            print(f"metadata = {metadata}")
             return {
                 "message_id": data["request_id"],
                 "topic": metadata.topic,
@@ -154,5 +157,6 @@ class KafkaInterface:
             }
 
         except Exception as ex:
+            print(traceback.format_exc())
             return {"error": str(ex)}
 
