@@ -49,9 +49,3 @@ class Config:
     REST_APP: Optional[FastAPI] = None
     UVICORN_HOST: str = os.getenv("UVICORN_HOST").strip()
     UVICORN_PORT: int = int(os.getenv("UVICORN_PORT").strip())
-
-    DATABASE_CLEANUP = bool(int(os.getenv("DATABASE_CLEANUP")))
-    DB_USER = os.getenv("DB_USER")
-    DB_PASSWORD = os.getenv("DB_PASSWORD")
-    DB_HOST = os.getenv("DB_HOST")
-    DB_NAME = os.getenv("DB_NAME")
