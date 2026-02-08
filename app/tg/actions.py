@@ -36,8 +36,8 @@ class UserActions:
             )
             print(f"result send_message = {result}")
 
-        except Exception:
-            print(traceback.format_exc())
+        except Exception as ex:
+            Config.LOGGER.error(f"Act send_message | The action failed to complete. ex: {ex}")
 
     @staticmethod
     async def edit_message(payload: EditMessageRequest):
@@ -51,13 +51,13 @@ class UserActions:
             print(f"result edit_message = {result}")
 
         except MessageAuthorRequiredError:
-            Config.LOGGER.error("Не удалось отредактировать сообщение! Бот не отправитель")
+            Config.LOGGER.error("Act edit_message | Не удалось отредактировать сообщение! Бот не отправитель")
 
         except MessageNotModifiedError:
-            Config.LOGGER.error("Не удалось отредактировать сообщение! Присланное содержимое не изменилось")
+            Config.LOGGER.error("Act edit_message | Не удалось отредактировать сообщение! Присланное содержимое не изменилось")
 
-        except Exception:
-            print(traceback.format_exc())
+        except Exception as ex:
+            Config.LOGGER.error(f"Act edit_message | The action failed to complete. ex: {ex}")
 
     @staticmethod
     async def delete_message(payload: DeleteMessageRequest):
@@ -68,8 +68,8 @@ class UserActions:
             )
             print(f"result delete_message = {result}")
 
-        except Exception:
-            print(traceback.format_exc())
+        except Exception as ex:
+            Config.LOGGER.error(f"Act delete_message | The action failed to complete. ex: {ex}")
 
     @staticmethod
     async def message_pin(payload: MessagePinRequest):
@@ -80,8 +80,8 @@ class UserActions:
             )
             print(f"result message_pin = {result}")
 
-        except Exception:
-            print(traceback.format_exc())
+        except Exception as ex:
+            Config.LOGGER.error(f"Act message_pin | The action failed to complete. ex: {ex}")
 
     @staticmethod
     async def message_unpin(payload: MessageUnpinRequest):
@@ -92,8 +92,8 @@ class UserActions:
             )
             print(f"result message_unpin = {result}")
 
-        except Exception:
-            print(traceback.format_exc())
+        except Exception as ex:
+            Config.LOGGER.error(f"Act message_unpin | The action failed to complete. ex: {ex}")
 
     @staticmethod
     async def send_photo(payload: SendPhotoRequest):
@@ -107,8 +107,8 @@ class UserActions:
             )
             print(f"result send_photo = {result}")
 
-        except Exception:
-            print(traceback.format_exc())
+        except Exception as ex:
+            Config.LOGGER.error(f"Act send_photo | The action failed to complete. ex: {ex}")
 
     @staticmethod
     async def send_video(payload: SendVideoRequest):
@@ -122,8 +122,8 @@ class UserActions:
             )
             print(f"result send_photo = {result}")
 
-        except Exception:
-            print(traceback.format_exc())
+        except Exception as ex:
+            Config.LOGGER.error(f"Act send_video | The action failed to complete. ex: {ex}")
 
     @staticmethod
     async def send_audio(payload: SendAudioRequest):
@@ -137,8 +137,8 @@ class UserActions:
             )
             print(f"result send_photo = {result}")
 
-        except Exception:
-            print(traceback.format_exc())
+        except Exception as ex:
+            Config.LOGGER.error(f"Act send_audio | The action failed to complete. ex: {ex}")
 
     @staticmethod
     async def send_document(payload: SendDocumentRequest):
@@ -152,8 +152,8 @@ class UserActions:
             )
             print(f"result send_photo = {result}")
 
-        except Exception:
-            print(traceback.format_exc())
+        except Exception as ex:
+            Config.LOGGER.error(f"Act send_document | The action failed to complete. ex: {ex}")
 
     @staticmethod
     async def send_sticker(payload: SendStickerRequest):
@@ -165,8 +165,8 @@ class UserActions:
             )
             print(f"result send_sticker = {result}")
 
-        except Exception:
-            print(traceback.format_exc())
+        except Exception as ex:
+            Config.LOGGER.error(f"Act send_sticker | The action failed to complete. ex: {ex}")
 
     @staticmethod
     async def send_voice(payload: SendVoiceRequest):
@@ -180,8 +180,8 @@ class UserActions:
             )
             print(f"result send_voice = {result}")
 
-        except Exception:
-            print(traceback.format_exc())
+        except Exception as ex:
+            Config.LOGGER.error(f"Act send_voice | The action failed to complete. ex: {ex}")
 
     @staticmethod
     async def send_gif(payload: SendGIFRequest):
@@ -196,8 +196,8 @@ class UserActions:
             )
             print(f"result send_gif = {result}")
 
-        except Exception:
-            print(traceback.format_exc())
+        except Exception as ex:
+            Config.LOGGER.error(f"Act send_gif | The action failed to complete. ex: {ex}")
 
     @staticmethod
     async def create_topic(payload: CreateTopicRequest):
@@ -209,8 +209,8 @@ class UserActions:
             ))
             print(f"result create_topic = {result}")
 
-        except Exception:
-            print(traceback.format_exc())
+        except Exception as ex:
+            Config.LOGGER.error(f"Act create_topic | The action failed to complete. ex: {ex}")
 
     @staticmethod
     async def edit_topic(payload: EditTopicRequest):
@@ -223,10 +223,10 @@ class UserActions:
             print(f"result edit_topic = {result}")
 
         except BadRequestError as ex:
-            Config.LOGGER.error(f"Не удалось отредактировать топик! ex: {ex}")
+            Config.LOGGER.error(f"Act edit_topic | Не удалось отредактировать топик! ex: {ex}")
 
-        except Exception:
-            print(traceback.format_exc())
+        except Exception as ex:
+            Config.LOGGER.error(f"Act edit_topic | The action failed to complete. ex: {ex}")
 
     @staticmethod
     async def delete_topic(payload: DeleteTopicRequest):
@@ -237,8 +237,8 @@ class UserActions:
             ))
             print(f"result delete_topic = {result}")
 
-        except Exception:
-            print(traceback.format_exc())
+        except Exception as ex:
+            Config.LOGGER.error(f"Act delete_topic | The action failed to complete. ex: {ex}")
 
     @staticmethod
     async def get_media_file_info(payload: MediaFileInfoRequest):
@@ -306,5 +306,5 @@ class UserActions:
             result = await Config.KAFKA_INTERFACE_OBJ.send_msg(payload=info_obj, topic="tg-responses")
             print(f"response kafka msg = {result}")
 
-        except Exception:
-            print(traceback.format_exc())
+        except Exception as ex:
+            Config.LOGGER.error(f"Act get_media_file_info | The action failed to complete. ex: {ex}")

@@ -28,7 +28,6 @@ class EventsCatcher:
 
     @staticmethod
     async def event_new_message(event: events.NewMessage.Event):
-        print(123124)
         Config.LOGGER.info("New event: NewMessage")
 
         if not await EventsCatcher.check_chat_id(event.message.peer_id):
@@ -42,7 +41,7 @@ class EventsCatcher:
             await Config.QUEUE_WORKER.put(HandleEvents.processing_new_message(event))
 
     @staticmethod
-    async def event_message_edited(event: events.MessageEdited.Event) -> bool:
+    async def event_message_edited(event: events.MessageEdited.Event):
         Config.LOGGER.info("New event: MessageEdited")
 
         if await EventsCatcher.check_chat_id(event.message.peer_id):
