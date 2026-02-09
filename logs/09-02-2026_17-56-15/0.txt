@@ -1,0 +1,22 @@
+mtprotosender.py:234 #INFO     [2026-02-09 17:56:15,039] - telethon.network.mtprotosender - 0| Connecting to 149.154.171.5:443/TcpFull...
+mtprotosender.py:285 #INFO     [2026-02-09 17:56:15,218] - telethon.network.mtprotosender - 0| Connection to 149.154.171.5:443/TcpFull complete!
+utils.py:101 #INFO     [2026-02-09 17:56:16,558] - root - 0| Client has been connected!
+utils.py:101 #INFO     [2026-02-09 17:56:16,559] - root - 0| Redis has been initialized!
+utils.py:101 #INFO     [2026-02-09 17:56:16,559] - root - 0| Prepare to load data in redis...
+utils.py:101 #INFO     [2026-02-09 17:56:16,559] - root - 0| Loading messages data from small groups...
+utils.py:101 #INFO     [2026-02-09 17:56:19,069] - root - 0| Data from small groups has been loaded!
+subscription_state.py:110 #INFO     [2026-02-09 17:56:19,070] - aiokafka.consumer.subscription_state - 0| Updating subscribed topics to: frozenset({'tg-commands'})
+utils.py:101 #INFO     [2026-02-09 17:56:19,071] - root - 0| Queue worker has been started!
+group_coordinator.py:594 #INFO     [2026-02-09 17:56:19,100] - aiokafka.consumer.group_coordinator - 0| Discovered coordinator 1 for group demo-group
+group_coordinator.py:415 #INFO     [2026-02-09 17:56:19,100] - aiokafka.consumer.group_coordinator - 0| Revoking previously assigned partitions set() for group demo-group
+group_coordinator.py:1281 #INFO     [2026-02-09 17:56:19,100] - aiokafka.consumer.group_coordinator - 0| (Re-)joining group demo-group
+group_coordinator.py:1360 #INFO     [2026-02-09 17:56:21,874] - aiokafka.consumer.group_coordinator - 0| Joined group 'demo-group' (generation 150) with member_id aiokafka-0.12.0-7d594464-94e7-4f1b-bcae-692084d3da0e
+group_coordinator.py:1368 #INFO     [2026-02-09 17:56:21,875] - aiokafka.consumer.group_coordinator - 0| Elected group leader -- performing partition assignments using roundrobin
+group_coordinator.py:1519 #INFO     [2026-02-09 17:56:21,884] - aiokafka.consumer.group_coordinator - 0| Successfully synced group demo-group with generation 150
+group_coordinator.py:506 #INFO     [2026-02-09 17:56:21,884] - aiokafka.consumer.group_coordinator - 0| Setting newly assigned partitions {TopicPartition(topic='tg-commands', partition=0)} for group demo-group
+kafka.py:53 #INFO     [2026-02-09 17:56:21,884] - root - 0| Kafka Consumer has been init
+kafka.py:33 #INFO     [2026-02-09 17:56:21,911] - root - 0| Kafka Producer has been init
+utils.py:101 #INFO     [2026-02-09 17:56:21,911] - root - 0| Event handlers has been registered!
+utils.py:101 #INFO     [2026-02-09 17:56:21,911] - root - 0| Kafka listener has been started!
+mtprotosender.py:325 #INFO     [2026-02-09 17:58:25,552] - telethon.network.mtprotosender - 0| Disconnecting from 149.154.171.5:443/TcpFull...
+mtprotosender.py:345 #INFO     [2026-02-09 17:58:25,553] - telethon.network.mtprotosender - 0| Disconnection from 149.154.171.5:443/TcpFull complete!

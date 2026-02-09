@@ -5,6 +5,7 @@ from telethon.tl import types
 
 from app.config import Config
 from app.tg.handlers import HandleEvents
+from app.tg.redis_service import RedisInterface
 from app.tg.tg_tools import TgTools
 
 
@@ -56,13 +57,8 @@ class EventsCatcher:
             chat_id = int(f"100{org_upd.channel_id}")
 
         elif isinstance(org_upd, types.UpdateDeleteMessages):
-            chat_id = None
-            for msg_id in org_upd.messages:
-                chat_id = await Config.REDIS.get(f"msg:{msg_id}")
-                if chat_id:
-                    break
-
-            if not chat_id:
+            chat_id = await RedisInterface().get_chat_id_of_del_msg(org_upd.messages)
+            if chat_id is None:
                 return
 
         else:

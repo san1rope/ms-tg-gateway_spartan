@@ -7,9 +7,8 @@ from pathlib import Path
 from typing import Dict, Union
 
 from telethon import TelegramClient, errors as te
+from telethon.errors import PeerIdInvalidError
 from telethon.tl import types
-from redis import AuthenticationError, BusyLoadingError
-from redis.asyncio import Redis
 
 from app.config import Config, LOG_LIST
 
@@ -17,9 +16,6 @@ from app.config import Config, LOG_LIST
 class Utils:
     STATUS_SUCCESS = "success"
     STATUS_FAIL = "fail"
-
-    MSG_INDEX_KEY = "msg:index"
-    MSG_K = lambda mid: f"msg:{mid}"
 
     @staticmethod
     async def init_telegram_client(retries: int = 3) -> bool:
@@ -58,34 +54,6 @@ class Utils:
             Config.LOGGER.critical("Unable to initialize TelegramClient. FloodWaitError, retries is 0")
 
         return False
-
-    @staticmethod
-    async def init_redis(retries: int = 3) -> bool:
-        try:
-            Config.REDIS = await Redis(
-                host=Config.REDIS_IP, port=6379, db=0, decode_responses=False, socket_keepalive=True,
-                password=Config.REDIS_PASSWORD, health_check_interval=15, socket_connect_timeout=5
-            )
-            return True
-
-        except ConnectionError:
-            Config.LOGGER.critical("Failed to connect to Redis!")
-            return False
-
-        except AuthenticationError:
-            Config.LOGGER.critical("Incorrect password for Redis!")
-            return False
-
-        except BusyLoadingError:
-            if retries:
-                Config.LOGGER.error(
-                    f"Unable to connect to Redis at this time, will reconnect in 10 seconds! Retries: {retries}")
-                await asyncio.sleep(10)
-
-                return await Utils.init_redis(retries=retries - 1)
-
-            Config.LOGGER.critical("Could not connect to Redis!")
-            return False
 
     @staticmethod
     async def add_logging(process_id: int, datetime_of_start: Union[datetime, str]) -> Logger:
@@ -196,32 +164,3 @@ class Utils:
                 continue
 
             LOG_LIST.clear()
-
-    @staticmethod
-    async def load_data_in_redis(batch_size: int = 1000):
-        await Utils.log("Prepare to load data in redis...")
-
-        pipe = Config.REDIS.pipeline(transaction=False)
-        queued = 0
-
-        await Utils.log("Loading messages data from small groups...")
-        async for dialog in Config.TG_CLIENT.iter_dialogs():
-            chat = dialog.entity
-            if not isinstance(chat, types.Chat):
-                continue
-
-            async for msg in Config.TG_CLIENT.iter_messages(chat, limit=200):
-                await pipe.sadd(Utils.MSG_INDEX_KEY, msg.id)
-
-                await pipe.setnx(Utils.MSG_K(msg.id), f"-{chat.id}")
-
-                queued += 2
-                if queued >= batch_size:
-                    await pipe.execute()
-                    pipe = Config.REDIS.pipeline(transaction=False)
-                    queued = 0
-
-        if queued:
-            await pipe.execute()
-
-        await Utils.log("Data from small groups has been loaded!")

@@ -6,12 +6,12 @@ from datetime import datetime
 import uvicorn
 from aiohttp import ClientSession
 from fastapi import FastAPI
-from telethon import events, TelegramClient
-from telethon.errors import SessionPasswordNeededError
+from telethon import events
 
 from app.api.kafka import KafkaInterface
 from app.config import Config
 from app.tg.events_catcher import EventsCatcher
+from app.tg.redis_service import RedisInterface
 from app.utils import Utils as Ut
 
 
@@ -49,11 +49,11 @@ async def lifespan(app: FastAPI):
 
     await Ut.log("Client has been connected!")
 
-    if not await Ut.init_redis():
+    if not await RedisInterface().init_redis():
         sys.exit(1)
 
     await Ut.log("Redis has been initialized!")
-    await Ut.load_data_in_redis()
+    await RedisInterface().load_messages_from_groups()
 
     asyncio.create_task(worker())
 
