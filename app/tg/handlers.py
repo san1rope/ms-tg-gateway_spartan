@@ -6,6 +6,7 @@ from telethon.tl.types import PeerChat
 
 from app.api.webhook import *
 from app.config import Config
+from app.tg.redis_service import RedisInterface
 from app.utils import Utils as Ut
 from app.tg.tg_tools import TgTools
 
@@ -16,80 +17,86 @@ class HandleEvents:
     async def processing_create_topic(event: types.UpdateNewChannelMessage):
         msg_obj = event.message
 
-        # chat_id, chat_info = await ChatInfo.obj_from_peer(msg_obj.peer_id)
-        # if not chat_id:
-        #     return
-        #
-        # topic_id, title, icon_color = await TgTools.get_topic_data_from_msg(msg_obj)
-        #
-        # sender = await msg_obj.get_sender()
-        # from_user = await FromUser.obj_from_sender(sender)
-        # if not from_user:
-        #     return
-        #
+        title, icon_color = msg_obj.action.title, msg_obj.action.icon_color
+        await RedisInterface().set_topic_data(
+            chat_id=msg_obj.peer_id.channel_id, topic_id=msg_obj.id, title=title, icon_color=icon_color
+        )
 
-        sender_obj = await event.get_sender()
-        from_user = await FromUser.obj_from_sender(sender_obj)
+        sender, chat = None, None
+        for item in event._entities.values():
+            if isinstance(item, types.User):
+                sender = item
 
-        print(f"sender = {sender_obj}")
+            elif isinstance(item, types.Channel):
+                chat = item
 
-        # await APIInterface.send_request(
-        #     utils_obj=Ut,
-        #     req_model=TopicCreated(
-        #         chat_id=msg_obj.peer_id.channel_id,
-        #         topic_id=msg_obj.id,
-        #         title=msg_obj.action.title,
-        #         icon_color=msg_obj.action.icon_color,
-        #         created_by=from_user,
-        #         chat_info=chat_info,
-        #         timestamp=msg_obj.date.strftime("%Y-%m-%dT%H:%M:%SZ")
-        #     )
-        # )
+        sender = sender if sender else await Config.TG_CLIENT.get_entity(msg_obj.from_id)
+        if not sender:
+            return None
+
+        from_user = await FromUser.obj_from_sender(sender)
+        if not from_user:
+            return None
+
+        chat_id, chat_info = await ChatInfo.assemble_obj(chat)
+        if not chat_id:
+            return None
+
+        await APIInterface.send_request(
+            utils_obj=Ut,
+            req_model=TopicCreated(
+                chat_id=msg_obj.peer_id.channel_id,
+                topic_id=msg_obj.id,
+                title=title,
+                icon_color=icon_color,
+                created_by=from_user,
+                chat_info=chat_info,
+                timestamp=msg_obj.date.strftime("%Y-%m-%dT%H:%M:%SZ")
+            )
+        )
 
     @staticmethod
     async def processing_new_message(event: events.NewMessage.Event):
         msg_obj = event.message
 
-        sender = await msg_obj.get_sender()
-        from_user = await FromUser.obj_from_sender(sender)
-        if not from_user:
-            return
-
-        chat_id, chat_info = await ChatInfo.obj_from_peer(msg_obj.peer_id)
-        if not chat_id:
-            return
-
-        if chat_info.type == "chat":
-            await Config.REDIS.set(f"msg:{msg_obj.id}", chat_id)
-
-        topic_id = await TgTools.get_topic_data_from_msg(msg_obj, only_id=True)
-        msg_type, media = await TgTools.get_media_data_from_msg(msg_obj)
-
-        await APIInterface.send_request(
-            utils_obj=Ut,
-            req_model=MessageCreated(
-                chat_id=chat_id,
-                message_id=msg_obj.id,
-                text=msg_obj.message,
-                message_type=msg_type,
-                topic_id=topic_id,
-                sender=from_user,
-                chat_info=chat_info,
-                timestamp=msg_obj.date.strftime("%Y-%m-%dT%H:%M:%SZ"),
-                media=media
-            )
-        )
+        # from_user = await FromUser.obj_from_sender(event.sender)
+        # if not from_user:
+        #     return
+        #
+        # chat_id, chat_info = await ChatInfo.assemble_obj(event.chat)
+        # if not chat_id:
+        #     return
+        #
+        # if chat_info.type == "chat":
+        #     await RedisInterface().set_chat_id(chat_id=chat_id * -1, msg_id=msg_obj.id)
+        #
+        # topic_id = await TgTools.get_topic_data_from_msg(msg_obj, only_id=True)
+        # msg_type, media = await TgTools.get_media_data_from_msg(msg_obj)
+        #
+        # await APIInterface.send_request(
+        #     utils_obj=Ut,
+        #     req_model=MessageCreated(
+        #         chat_id=chat_id,
+        #         message_id=msg_obj.id,
+        #         text=msg_obj.message,
+        #         message_type=msg_type,
+        #         topic_id=topic_id,
+        #         sender=from_user,
+        #         chat_info=chat_info,
+        #         timestamp=msg_obj.date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        #         media=media
+        #     )
+        # )
 
     @staticmethod
     async def processing_message_edited(event: events.MessageEdited.Event):
         msg_obj = event.message
 
-        chat_id, chat_info = await ChatInfo.obj_from_peer(msg_obj.peer_id)
+        chat_id, chat_info = await ChatInfo.assemble_obj(event.chat)
         if not chat_id:
             return
 
-        sender = await msg_obj.get_sender()
-        from_user = await FromUser.obj_from_sender(sender)
+        from_user = await FromUser.obj_from_sender(event.sender)
         if not from_user:
             return
 
@@ -113,10 +120,13 @@ class HandleEvents:
 
     @staticmethod
     async def processing_message_deleted(event: events.MessageDeleted.Event):
+
         org_upd = event.original_update
         if isinstance(org_upd, types.UpdateDeleteChannelMessages):
+            print(f"deleted UpdateDeleteChannelMessages; {event._entities}")
+
             input_chat = await event.get_input_chat()
-            chat_id, chat_info = await ChatInfo.obj_from_peer(input_chat)
+            chat_id, chat_info = await ChatInfo.assemble_obj(input_chat)
             if not chat_id:
                 return
 
@@ -148,6 +158,8 @@ class HandleEvents:
                 return
 
         elif isinstance(org_upd, types.UpdateDeleteMessages):
+            print(f"deleted UpdateDeleteMessages; {event._entities}")
+
             message_ids = org_upd.messages
             chat_id = None
             for msg_id in message_ids:
@@ -158,7 +170,7 @@ class HandleEvents:
             if not chat_id:
                 return
 
-            chat_id, chat_info = await ChatInfo.obj_from_peer(PeerChat(chat_id=int(chat_id[1:])))
+            chat_id, chat_info = await ChatInfo.assemble_obj(PeerChat(chat_id=int(chat_id[1:])))
             if not chat_info:
                 return
 
@@ -180,7 +192,7 @@ class HandleEvents:
     async def processing_action_add_chat_user(event: events.ChatAction.Event):
         act_msg = event.action_message
 
-        chat_id, chat_info = await ChatInfo.obj_from_peer(act_msg.peer_id)
+        chat_id, chat_info = await ChatInfo.assemble_obj(act_msg.peer_id)
         if not chat_id:
             return
 
@@ -236,6 +248,8 @@ class HandleEvents:
 
     @staticmethod
     async def processing_action_chat_delete_user(event: events.ChatAction.Event):
+        print(f"processing_action_chat_delete_user. {event.chat}")
+
         act_msg = event.action_message
         if isinstance(act_msg.peer_id, types.PeerChannel):
             chat_id = int(f"-100{act_msg.peer_id.channel_id}")
@@ -258,12 +272,14 @@ class HandleEvents:
     async def processing_topic_edited(event: types.UpdateNewChannelMessage):
         msg_obj = event.message
 
+        print(f"processing_topic_edited; {event._entities}")
+
         sender = await Config.TG_CLIENT.get_entity(msg_obj.from_id)
         from_user = await FromUser.obj_from_sender(sender)
         if not from_user:
             return None
 
-        chat_id, chat_info = await ChatInfo.obj_from_peer(msg_obj.peer_id)
+        chat_id, chat_info = await ChatInfo.assemble_obj(msg_obj.peer_id)
         if not chat_id:
             return None
 

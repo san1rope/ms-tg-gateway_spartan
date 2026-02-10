@@ -8,6 +8,7 @@ from telethon.tl.functions.messages import GetStickerSetRequest, GetForumTopicsB
 
 from app.api.webhook import FromUser, MediaPhoto, MediaSticker, MediaAudio, MediaVideoGIF, MediaDocument
 from app.config import Config
+from app.tg.redis_service import RedisInterface
 from app.utils import Utils as Ut
 
 
@@ -162,7 +163,7 @@ class TgTools:
         return msg_type, media
 
     @staticmethod
-    async def get_topic_data_from_msg(msg_obj: types.Message, only_id: bool = False):
+    async def get_topic_data_from_msg(msg_obj: types.Message, only_id: bool = False, use_cache: bool = True):
         topic_id = None
         title = ""
         icon_color = 0
@@ -173,10 +174,32 @@ class TgTools:
             if only_id:
                 return topic_id
 
-            topic_data = await Config.TG_CLIENT(GetForumTopicsByIDRequest(peer=msg_obj.peer_id, topics=[topic_id]))
-            if topic_data:
-                title = topic_data.topics[0].title
-                icon_color = topic_data.topics[0].icon_color
+            flag_update_cache = False
+            title, icon_color = None, None
+            if hasattr(msg_obj, "action") and isinstance(msg_obj.action, types.MessageActionTopicEdit):
+                flag_update_cache = True
+                if hasattr(msg_obj.action, "title"):
+                    title = msg_obj.action.title
+
+                if hasattr(msg_obj.action, "icon_color"):
+                    icon_color = msg_obj.action.icon_color
+
+            if use_cache and ((not title) or (not icon_color)):
+                topic_data = await RedisInterface().get_topic_data(msg_obj.peer_id.channel_id, topic_id)
+                title = topic_data[0] if not title else title
+                icon_color = topic_data[1] if not icon_color else icon_color
+
+            if (not title) or (not icon_color):
+                flag_update_cache = True
+                topic_data = await Config.TG_CLIENT(GetForumTopicsByIDRequest(peer=msg_obj.peer_id, topics=[topic_id]))
+                if topic_data:
+                    title = topic_data.topics[0].title
+                    icon_color = topic_data.topics[0].icon_color
+
+            if flag_update_cache:
+                await RedisInterface().set_topic_data(
+                    chat_id=msg_obj.peer_id.channel_id, topic_id=topic_id, title=title, icon_color=icon_color
+                )
 
         if only_id:
             return topic_id

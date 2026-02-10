@@ -8,6 +8,7 @@ from telethon.tl.functions.channels import GetFullChannelRequest
 from telethon.tl.functions.messages import GetFullChatRequest
 
 from app.config import Config
+from app.tg.redis_service import RedisInterface
 
 
 class FromUser(BaseModel):
@@ -39,34 +40,58 @@ class ChatInfo(BaseModel):
     member_count: int
 
     @staticmethod
-    async def obj_from_peer(peer_id, only_chat_id: bool = False, chat: bool = False):
-        if isinstance(peer_id, (types.PeerChannel, types.InputPeerChannel)):
-            full_chat = await Config.TG_CLIENT(GetFullChannelRequest(peer_id))
-            chat_obj = full_chat.chats[0]
-            chat_id = int(f"-100{chat_obj.id}")
-            participants_count = full_chat.full_chat.participants_count
-            chat_type = "supergroup" if chat_obj.megagroup else "channel"
+    async def assemble_obj(input_obj, only_chat_id=False, chat: bool = False, use_cache: bool = True):
+        flag_update_cache = False
+        if isinstance(input_obj, (types.PeerChannel, types.InputPeerChannel, types.Channel)):
+            participants_count = None
 
-        elif isinstance(peer_id, types.PeerChat) or chat:
-            if isinstance(peer_id, types.PeerChat):
-                peer_id = peer_id.chat_id
+            if use_cache:
+                chat_data = await RedisInterface().get_chat_data(input_obj.id)
+                if chat_data:
+                    participants_count = json.loads(chat_data)["member_count"]
 
-            full_chat = await Config.TG_CLIENT(GetFullChatRequest(peer_id))
-            chat_obj = full_chat.chats[0]
-            chat_id = int(f"-{chat_obj.id}")
-            participants_count = len(full_chat.full_chat.participants.participants)
+            if (not participants_count) or (not isinstance(input_obj, types.Channel)):
+                full_chat = await Config.TG_CLIENT(GetFullChannelRequest(input_obj))
+                input_obj = full_chat.chats[0]
+                participants_count = full_chat.full_chat.participants_count
+                flag_update_cache = True
+
+            title = input_obj.title
+            chat_id = int(f"-100{input_obj.id}")
+            chat_type = "supergroup" if input_obj.megagroup else "channel"
+
+        elif isinstance(input_obj, (types.PeerChat, types.InputPeerChat, types.Chat)) or chat:
+            participants_count = None
+            if not isinstance(input_obj, types.Chat):
+                full_chat = await Config.TG_CLIENT(GetFullChatRequest(getattr(input_obj, "chat_id", input_obj)))
+                input_obj = full_chat.chats[0]
+                participants_count = len(full_chat.full_chat.participants.participants)
+                flag_update_cache = True
+
+            title = input_obj.title
+            chat_id = int(f"-{input_obj.id}")
             chat_type = "chat"
 
         else:
             return None if only_chat_id else (None, None)
 
         chat_info = ChatInfo(
-            title=chat_obj.title,
-            username=getattr(chat_obj, "username", None),
+            title=title,
+            username=getattr(input_obj, "username", None),
             type=chat_type,
-            is_forum=getattr(chat_obj, "forum", False),
+            is_forum=getattr(input_obj, "forum", False),
             member_count=participants_count
         )
+
+        if flag_update_cache:
+            if str(chat_id).startswith("-100"):
+                chat_id = str(chat_id).replace("-100", "")
+
+            else:
+                chat_id = str(chat_id * -1)
+
+            await RedisInterface().set_chat_data(chat_id=chat_id, chat_info=chat_info)
+
         return chat_id if only_chat_id else (chat_id, chat_info)
 
 

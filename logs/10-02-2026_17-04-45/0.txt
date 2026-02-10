@@ -1,0 +1,48 @@
+mtprotosender.py:234 #INFO     [2026-02-10 17:04:45,172] - telethon.network.mtprotosender - 0| Connecting to 149.154.171.5:443/TcpFull...
+mtprotosender.py:285 #INFO     [2026-02-10 17:04:45,347] - telethon.network.mtprotosender - 0| Connection to 149.154.171.5:443/TcpFull complete!
+utils.py:101 #INFO     [2026-02-10 17:04:46,464] - root - 0| Client has been connected!
+utils.py:101 #INFO     [2026-02-10 17:04:46,466] - root - 0| Redis has been initialized!
+utils.py:101 #INFO     [2026-02-10 17:04:46,466] - root - 0| Prepare to load data in redis...
+utils.py:101 #INFO     [2026-02-10 17:04:46,466] - root - 0| Loading messages data from small groups...
+utils.py:101 #INFO     [2026-02-10 17:04:46,678] - root - 0| Data from small groups has been loaded!
+subscription_state.py:110 #INFO     [2026-02-10 17:04:46,680] - aiokafka.consumer.subscription_state - 0| Updating subscribed topics to: frozenset({'tg-commands'})
+utils.py:101 #INFO     [2026-02-10 17:04:46,681] - root - 0| Queue worker has been started!
+group_coordinator.py:594 #INFO     [2026-02-10 17:04:46,712] - aiokafka.consumer.group_coordinator - 0| Discovered coordinator 1 for group demo-group
+group_coordinator.py:415 #INFO     [2026-02-10 17:04:46,712] - aiokafka.consumer.group_coordinator - 0| Revoking previously assigned partitions set() for group demo-group
+group_coordinator.py:1281 #INFO     [2026-02-10 17:04:46,712] - aiokafka.consumer.group_coordinator - 0| (Re-)joining group demo-group
+group_coordinator.py:1360 #INFO     [2026-02-10 17:04:49,591] - aiokafka.consumer.group_coordinator - 0| Joined group 'demo-group' (generation 222) with member_id aiokafka-0.12.0-6566ab59-8dee-466b-b25e-2b37c6d34fd6
+group_coordinator.py:1368 #INFO     [2026-02-10 17:04:49,591] - aiokafka.consumer.group_coordinator - 0| Elected group leader -- performing partition assignments using roundrobin
+group_coordinator.py:1519 #INFO     [2026-02-10 17:04:49,602] - aiokafka.consumer.group_coordinator - 0| Successfully synced group demo-group with generation 222
+group_coordinator.py:506 #INFO     [2026-02-10 17:04:49,602] - aiokafka.consumer.group_coordinator - 0| Setting newly assigned partitions {TopicPartition(topic='tg-commands', partition=0)} for group demo-group
+kafka.py:53 #INFO     [2026-02-10 17:04:49,602] - root - 0| Kafka Consumer has been init
+kafka.py:33 #INFO     [2026-02-10 17:04:49,628] - root - 0| Kafka Producer has been init
+utils.py:101 #INFO     [2026-02-10 17:04:49,628] - root - 0| Event handlers has been registered!
+utils.py:101 #INFO     [2026-02-10 17:04:49,628] - root - 0| Kafka listener has been started!
+events_catcher.py:31 #INFO     [2026-02-10 17:05:17,854] - root - 0| New event: NewMessage
+utils.py:101 #INFO     [2026-02-10 17:05:20,274] - root - 0| Event: Message Created
+Request | 200 | https://tenerife.chat/chat/webhook/telegram/create 
+<pre>{
+  "type": "message_created",
+  "chat_id": 3645046857,
+  "message_id": 150,
+  "text": "Фі",
+  "message_type": 1,
+  "topic_id": 135,
+  "sender": {
+    "id": 1643710214,
+    "first_name": "san1rope",
+    "username": "san1rope",
+    "language_code": null
+  },
+  "chat_info": {
+    "title": "фывфыв",
+    "username": null,
+    "type": "supergroup",
+    "is_forum": true,
+    "member_count": 4
+  },
+  "timestamp": "2026-02-10T15:05:16Z",
+  "media": null
+}</pre>
+mtprotosender.py:325 #INFO     [2026-02-10 17:05:35,658] - telethon.network.mtprotosender - 0| Disconnecting from 149.154.171.5:443/TcpFull...
+mtprotosender.py:345 #INFO     [2026-02-10 17:05:35,659] - telethon.network.mtprotosender - 0| Disconnection from 149.154.171.5:443/TcpFull complete!

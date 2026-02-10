@@ -1,5 +1,5 @@
 import asyncio
-from typing import Optional, Union, List
+from typing import Optional, Union, List, Tuple
 
 from redis.asyncio import Redis
 from redis import AuthenticationError, BusyLoadingError
@@ -12,7 +12,9 @@ from app.utils import Utils as Ut
 class RedisInterface:
     REDIS: Optional[Redis] = None
 
-    MSG_K = lambda mid: f"msg:{mid}"
+    F_KEY_GROUPS_MSG = lambda msg_id: f"msg:{msg_id}"
+    F_KEY_TOPIC_DATA = lambda chat_id, topic_id: f"topic:{chat_id}:{topic_id}"
+    F_KEY_CHAT_DATA = lambda chat_id: f"chat:{chat_id}"
 
     @classmethod
     async def init_redis(cls, retries: int = 3) -> bool:
@@ -42,8 +44,61 @@ class RedisInterface:
             Config.LOGGER.critical("Could not connect to Redis!")
             return False
 
-    # @classmethod
-    # async def new_topic(cls, ):
+    @classmethod
+    async def set_topic_data(
+            cls, chat_id: Union[str, int], topic_id: Union[int, str], title: str, icon_color: int) -> bool:
+        try:
+            await cls.REDIS.set(
+                cls.F_KEY_TOPIC_DATA(chat_id, topic_id),
+                str({"title": title, "icon_color": icon_color})
+            )
+            return True
+
+        except Exception as ex:
+            Config.LOGGER.error(f"RedisInterface.new_topic | {ex}")
+            return False
+
+    @classmethod
+    async def get_topic_data(cls, chat_id: Union[str, int], topic_id: Union[str, int]) -> Union[Tuple[str], None]:
+        try:
+            result = await cls.REDIS.get(cls.F_KEY_TOPIC_DATA(chat_id, topic_id))
+            if result:
+                return result.split(":")
+
+        except Exception as ex:
+            Config.LOGGER.error(f"RedisInterface.get_topic_data | {ex}")
+
+        return None
+
+    @classmethod
+    async def set_chat_data(cls, chat_id: Union[str, int], chat_info) -> bool:
+        try:
+            await cls.REDIS.set(cls.F_KEY_CHAT_DATA(chat_id), str(chat_info.model_dump()))
+            return True
+
+        except Exception as ex:
+            Config.LOGGER.error(f"RedisInterface.set_chat_data | {ex}")
+            return False
+
+    @classmethod
+    async def get_chat_data(cls, chat_id: Union[str, int]):
+        try:
+            result = await cls.REDIS.get(cls.F_KEY_CHAT_DATA(chat_id))
+            if result:
+                pass
+
+        except Exception as ex:
+            Config.LOGGER.error(f"RedisInterface.get_chat_data | {ex}")
+
+    @classmethod
+    async def set_chat_id(cls, chat_id: int, msg_id: Union[str, int]) -> bool:
+        try:
+            await cls.REDIS.set(cls.F_KEY_GROUPS_MSG(msg_id), chat_id)
+            return True
+
+        except Exception as ex:
+            Config.LOGGER.error(f"RedisInterface.set_chat_id | {ex}")
+            return False
 
     @classmethod
     async def get_chat_id_of_del_msg(cls, message_id: Union[int, List[int]]) -> Union[int, None]:
@@ -51,7 +106,7 @@ class RedisInterface:
             message_id = [message_id]
 
         for msg_id in message_id:
-            chat_id = cls.REDIS.get(cls.MSG_K(msg_id))
+            chat_id = cls.REDIS.get(cls.F_KEY_GROUPS_MSG(msg_id))
             if chat_id:
                 return chat_id
 
@@ -71,7 +126,7 @@ class RedisInterface:
                 continue
 
             async for msg in Config.TG_CLIENT.iter_messages(chat, limit=200):
-                await pipe.setnx(cls.MSG_K(msg.id), f"-{chat.id}")
+                await pipe.setnx(cls.F_KEY_GROUPS_MSG(msg.id), f"-{chat.id}")
 
                 queued += 1
                 if queued >= batch_size:

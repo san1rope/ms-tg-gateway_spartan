@@ -6,7 +6,6 @@ from telethon.tl import types
 from app.config import Config
 from app.tg.handlers import HandleEvents
 from app.tg.redis_service import RedisInterface
-from app.tg.tg_tools import TgTools
 
 
 class EventsCatcher:
@@ -33,12 +32,6 @@ class EventsCatcher:
 
         if not await EventsCatcher.check_chat_id(event.message.peer_id):
             return
-
-        # topic_id = await TgTools.get_topic_data_from_msg(msg_obj=event.message, only_id=True)
-        # if topic_id and (topic_id + 1 == event.message.id):
-        #     await Config.QUEUE_WORKER.put(HandleEvents.processing_create_topic(event))
-        #
-        # else:
 
         await Config.QUEUE_WORKER.put(HandleEvents.processing_new_message(event))
 
