@@ -13,32 +13,38 @@ from app.tg.tg_tools import TgTools
 class HandleEvents:
 
     @staticmethod
-    async def processing_create_topic(event: events.NewMessage.Event):
+    async def processing_create_topic(event: types.UpdateNewChannelMessage):
         msg_obj = event.message
 
-        chat_id, chat_info = await ChatInfo.obj_from_peer(msg_obj.peer_id)
-        if not chat_id:
-            return
+        # chat_id, chat_info = await ChatInfo.obj_from_peer(msg_obj.peer_id)
+        # if not chat_id:
+        #     return
+        #
+        # topic_id, title, icon_color = await TgTools.get_topic_data_from_msg(msg_obj)
+        #
+        # sender = await msg_obj.get_sender()
+        # from_user = await FromUser.obj_from_sender(sender)
+        # if not from_user:
+        #     return
+        #
 
-        topic_id, title, icon_color = await TgTools.get_topic_data_from_msg(msg_obj)
+        sender_obj = await event.get_sender()
+        from_user = await FromUser.obj_from_sender(sender_obj)
 
-        sender = await msg_obj.get_sender()
-        from_user = await FromUser.obj_from_sender(sender)
-        if not from_user:
-            return
+        print(f"sender = {sender_obj}")
 
-        await APIInterface.send_request(
-            utils_obj=Ut,
-            req_model=TopicCreated(
-                chat_id=chat_id,
-                topic_id=topic_id,
-                title=title,
-                icon_color=icon_color,
-                created_by=from_user,
-                chat_info=chat_info,
-                timestamp=msg_obj.date.strftime("%Y-%m-%dT%H:%M:%SZ")
-            )
-        )
+        # await APIInterface.send_request(
+        #     utils_obj=Ut,
+        #     req_model=TopicCreated(
+        #         chat_id=msg_obj.peer_id.channel_id,
+        #         topic_id=msg_obj.id,
+        #         title=msg_obj.action.title,
+        #         icon_color=msg_obj.action.icon_color,
+        #         created_by=from_user,
+        #         chat_info=chat_info,
+        #         timestamp=msg_obj.date.strftime("%Y-%m-%dT%H:%M:%SZ")
+        #     )
+        # )
 
     @staticmethod
     async def processing_new_message(event: events.NewMessage.Event):

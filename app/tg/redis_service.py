@@ -42,6 +42,9 @@ class RedisInterface:
             Config.LOGGER.critical("Could not connect to Redis!")
             return False
 
+    # @classmethod
+    # async def new_topic(cls, ):
+
     @classmethod
     async def get_chat_id_of_del_msg(cls, message_id: Union[int, List[int]]) -> Union[int, None]:
         if isinstance(message_id, int):

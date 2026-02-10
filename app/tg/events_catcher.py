@@ -34,12 +34,13 @@ class EventsCatcher:
         if not await EventsCatcher.check_chat_id(event.message.peer_id):
             return
 
-        topic_id = await TgTools.get_topic_data_from_msg(msg_obj=event.message, only_id=True)
-        if topic_id and (topic_id + 1 == event.message.id):
-            await Config.QUEUE_WORKER.put(HandleEvents.processing_create_topic(event))
+        # topic_id = await TgTools.get_topic_data_from_msg(msg_obj=event.message, only_id=True)
+        # if topic_id and (topic_id + 1 == event.message.id):
+        #     await Config.QUEUE_WORKER.put(HandleEvents.processing_create_topic(event))
+        #
+        # else:
 
-        else:
-            await Config.QUEUE_WORKER.put(HandleEvents.processing_new_message(event))
+        await Config.QUEUE_WORKER.put(HandleEvents.processing_new_message(event))
 
     @staticmethod
     async def event_message_edited(event: events.MessageEdited.Event):
@@ -89,7 +90,14 @@ class EventsCatcher:
             if not action:
                 return
 
-            if isinstance(action, types.MessageActionTopicEdit):
+            if isinstance(action, types.MessageActionTopicCreate):
+                Config.LOGGER.info("New event: Raw:MessageActionTopicCreate")
+                if not await EventsCatcher.check_chat_id(event.message.peer_id):
+                    return
+
+                await Config.QUEUE_WORKER.put(HandleEvents.processing_create_topic(event))
+
+            elif isinstance(action, types.MessageActionTopicEdit):
                 Config.LOGGER.info("New event: Raw:MessageActionTopicEdit")
                 if not await EventsCatcher.check_chat_id(event.message.peer_id):
                     return
